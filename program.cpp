@@ -61,8 +61,11 @@ public:
     }
 
     void signUp(string name, int pin) {
+        cout << "Choose account type - 1 for Savings, 2 for Current: ";
+        int choice; cin >> choice;
+        string type = (choice == 2) ? "Current" : "Savings";
         User newUser(nextUserId++, name, pin);
-        newUser.addAccount(Account(1000 + newUser.getId(), 0, "Savings"));
+        newUser.addAccount(Account(1000 + newUser.getId(), 0, type));
         users.push_back(newUser);
         saveToFile();
         cout << "Sign up successful! Your User ID is: " << newUser.getId() << endl;
@@ -83,7 +86,8 @@ public:
                  << u.getName() << "|"
                  << u.getPin() << "|"
                  << acc.getAccountNumber() << "|"
-                 << acc.getBalance() << "\n";
+                 << acc.getBalance() << "|"
+                 << acc.getType() << "\n";
         }
     }
 
@@ -94,22 +98,22 @@ public:
         string line;
         while (getline(file, line)) {
             stringstream ss(line);
-            string userIdStr, name, pinStr, accNoStr, balStr;
+            string userIdStr, name, pinStr, accNoStr, balStr, typeStr;
             getline(ss, userIdStr, '|');
             getline(ss, name, '|');
             getline(ss, pinStr, '|');
             getline(ss, accNoStr, '|');
-            getline(ss, balStr);
+            getline(ss, balStr, '|');
+            getline(ss, typeStr);
 
             int id = stoi(userIdStr);
             int pin = stoi(pinStr);
+            int accNo = stoi(accNoStr);
             double balance = stod(balStr);
-            User newUser(id, name, pin);
-            cout << "Choose account type - 1 for Savings, 2 for Current:";
-            int choice; cin >> choice;
-            string type = (choice == 2) ? "Current" : "Savings";
-            newUser.addAccount(Account(1000 + newUser.getId(), 0, type));
+            string type = typeStr;
 
+            User newUser(id, name, pin);
+            newUser.addAccount(Account(accNo, balance, type));
             users.push_back(newUser);
             nextUserId = max(nextUserId, id + 1);
         }
@@ -143,7 +147,7 @@ public:
         cout << "Welcome, " << user->getName() << "!\n";
         int choice;
         do {
-            cout << "1. View Balance\n2. Deposit\n3. Withdraw\n4. Logout\nChoose: ";
+            cout << "ATM Options:\n1. View Balance\n2. Deposit\n3. Withdraw\n4. Logout\nChoose: ";
             cin >> choice;
             if (choice == 1) {
                 for (auto &acc : user->getAccounts()) {
