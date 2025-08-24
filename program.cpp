@@ -35,7 +35,27 @@ public:
     void checkBalance() { cout << "Current Balance: " << balance << endl; }
 };
 
+class Bank {
+private:
+    vector<Account> accounts;
+
+public:
+    void addAccount(Account acc) { accounts.push_back(acc); }
+
+    Account* getAccount(int accNo) {
+        for (auto &acc : accounts) {
+            if (acc.getAccountNumber() == accNo)
+                return &acc;
+        }
+        return nullptr;
+    }
+};
+
 int main() {
-    cout << "Account class created successfully." << endl;
+    Bank bank;
+    bank.addAccount(Account(1001, "Alice", 5000, 1234));
+    bank.addAccount(Account(1002, "Bob", 3000, 4321));
+
+    cout << "Bank initialized with accounts." << endl;
     return 0;
 }
