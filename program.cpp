@@ -109,6 +109,63 @@ public:
             }
         } while (choice != 5);
     }
+
+     void viewAccounts() {
+        auto &accs = currentUser->getAccounts();
+        cout << "Your Accounts:\n";
+        for (auto &a : accs) {
+            cout << "Acc No: " << a.getAccountNumber() 
+                 << " | Type: " << a.getType() 
+                 << " | Balance: " << a.getBalance() << endl;
+        }
+    }
+
+    void deposit() {
+        int accNo; double amt;
+        cout << "Enter Account Number: "; cin >> accNo;
+        cout << "Enter Amount: "; cin >> amt;
+        for (auto &a : currentUser->getAccounts()) {
+            if (a.getAccountNumber() == accNo) {
+                a.deposit(amt);
+                cout << "Deposited. New Balance: " << a.getBalance() << endl;
+                return;
+            }
+        }
+        cout << "Account not found.\n";
+    }
+
+    void withdraw() {
+        int accNo; double amt;
+        cout << "Enter Account Number: "; cin >> accNo;
+        cout << "Enter Amount: "; cin >> amt;
+        for (auto &a : currentUser->getAccounts()) {
+            if (a.getAccountNumber() == accNo) {
+                a.withdraw(amt);
+                return;
+            }
+        }
+        cout << "Account not found.\n";
+    }
+
+    void transfer() {
+        int fromAcc, toAcc; double amt;
+        cout << "From Account: "; cin >> fromAcc;
+        cout << "To Account: "; cin >> toAcc;
+        cout << "Amount: "; cin >> amt;
+
+        Account *src = nullptr, *dest = nullptr;
+        for (auto &a : currentUser->getAccounts()) {
+            if (a.getAccountNumber() == fromAcc) src = &a;
+            if (a.getAccountNumber() == toAcc) dest = &a;
+        }
+
+        if (src && dest && src->withdraw(amt)) {
+            dest->deposit(amt);
+            cout << "Transferred. New balance in " << fromAcc << ": " << src->getBalance() << endl;
+        } else {
+            cout << "Transfer failed.\n";
+        }
+    }
 };
 
 int main() {
