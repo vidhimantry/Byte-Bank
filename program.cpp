@@ -1,7 +1,11 @@
 #include <iostream>
+#include <vector>
 #include <string>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
+// Account Class
 class Account {
 private:
     int accountNumber;
@@ -9,68 +13,116 @@ private:
     string type;
 
 public:
-    Account(int accNo, double bal, string t) 
-        : accountNumber(accNo), balance(bal), type(t) {}
+    Account(int accNo, double bal, string accType)
+        : accountNumber(accNo), balance(bal), type(accType) {}
 
     int getAccountNumber() { return accountNumber; }
     double getBalance() { return balance; }
     string getType() { return type; }
 
-    void deposit(double amount) {
-        balance += amount;
-        cout << "Deposited: " << amount << " | New Balance: " << balance << endl;
+    void deposit(double amount) { balance += amount; }
+    bool withdraw(double amount) {
+        if (amount > balance) return false;
+        balance -= amount;
+        return true;
     }
-
-    void withdraw(double amount) {
-        if (amount > balance) {
-            cout << "Insufficient balance!" << endl;
-        } else {
-            balance -= amount;
-            cout << "Withdrawn: " << amount << " | New Balance: " << balance << endl;
-        }
-    }
-
-    void checkBalance() { cout << "Current Balance: " << balance << endl; }
 };
 
+// User Class
 class User {
 private:
+    int id;
     string name;
-    int userID;
     int pin;
     vector<Account> accounts;
 
 public:
-    User(int id, string uname, int p) : userID(id), name(uname), pin(p) {}
+    User(int uid, string uname, int upin)
+        : id(uid), name(uname), pin(upin) {}
 
+    int getId() { return id; }
     string getName() { return name; }
-    int getID() { return userID; }
-    bool validatePIN(int entered) { return entered == pin; }
+    int getPin() { return pin; }
+    vector<Account>& getAccounts() { return accounts; }
 
     void addAccount(Account acc) { accounts.push_back(acc); }
-    vector<Account>& getAccounts() { return accounts; }
+    bool validatePin(int entered) { return entered == pin; }
 };
 
+// Bank Class
 class Bank {
 private:
     vector<User> users;
+    int nextUserId = 1;
 
 public:
-    void addUser(User u) { users.push_back(u); }
+    Bank() {
+        loadFromFile();
+    }
+
+    void signUp(string name, int pin) {
+        User newUser(nextUserId++, name, pin);
+        newUser.addAccount(Account(1000 + newUser.getId(), 0, "Savings"));
+        users.push_back(newUser);
+        saveToFile();
+        cout << "Sign up successful! Your User ID is: " << newUser.getId() << endl;
+    }
 
     User* authenticate(int id, int pin) {
         for (auto &u : users) {
-            if (u.getID() == id && u.validatePIN(pin))
-                return &u;
+            if (u.getId() == id && u.validatePin(pin)) return &u;
         }
         return nullptr;
     }
+
+    void saveToFile() {
+        ofstream file("users.txt");
+        for (auto &u : users) {
+            Account acc = u.getAccounts()[0];
+            file << u.getId() << "|"
+                 << u.getName() << "|"
+                 << u.getPin() << "|"
+                 << acc.getAccountNumber() << "|"
+                 << acc.getBalance() << "\n";
+        }
+    }
+
+    void loadFromFile() {
+        ifstream file("users.txt");
+        if (!file) return;
+
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string userIdStr, name, pinStr, accNoStr, balStr;
+            getline(ss, userIdStr, '|');
+            getline(ss, name, '|');
+            getline(ss, pinStr, '|');
+            getline(ss, accNoStr, '|');
+            getline(ss, balStr);
+
+            int id = stoi(userIdStr);
+            int pin = stoi(pinStr);
+            double balance = stod(balStr);
+            User newUser(id, name, pin);
+            cout << "Choose account type - 1 for Savings, 2 for Current:";
+            int choice; cin >> choice;
+            string type = (choice == 2) ? "Current" : "Savings";
+            newUser.addAccount(Account(1000 + newUser.getId(), 0, type));
+
+            users.push_back(newUser);
+            nextUserId = max(nextUserId, id + 1);
+        }
+        file.close();
+    }
+
+    vector<User>& getUsers() { return users; }
 };
 
+// ATM Class
 class ATM {
 private:
     Bank &bank;
-    User* currentUser = nullptr;
 
 public:
     ATM(Bank &b) : bank(b) {}
@@ -82,106 +134,68 @@ public:
         cout << "Enter PIN: ";
         cin >> pin;
 
-        currentUser = bank.authenticate(id, pin);
-        if (currentUser) {
-            cout << "Welcome " << currentUser->getName() << "!\n";
-            showMenu();
-        } else {
-            cout << "Invalid credentials.\n";
+        User* user = bank.authenticate(id, pin);
+        if (!user) {
+            cout << "Invalid login.\n";
+            return;
         }
-    }
 
-    void showMenu() {
+        cout << "Welcome, " << user->getName() << "!\n";
         int choice;
         do {
-            cout << "ATM OPTIONS: \n";
-            cout << "1. View Accounts\n2. Deposit\n3. Withdraw\n4. Transfer\n5. Logout\n";
-            cout << "Choose: ";
+            cout << "1. View Balance\n2. Deposit\n3. Withdraw\n4. Logout\nChoose: ";
             cin >> choice;
-
-        switch (choice) {
-                case 1: viewAccounts(); break;
-                case 2: deposit(); break;
-                case 3: withdraw(); break;
-                case 4: transfer(); break;
-                case 5: cout << "Logging out...\n"; break;
-                default: cout << "Invalid choice.\n";
+            if (choice == 1) {
+                for (auto &acc : user->getAccounts()) {
+                    cout << acc.getType() << " Acc " << acc.getAccountNumber()
+                         << " Balance: " << acc.getBalance() << endl;
+                }
+            } else if (choice == 2) {
+                double amt;
+                cout << "Enter amount: ";
+                cin >> amt;
+                user->getAccounts()[0].deposit(amt);
+                bank.saveToFile();
+                cout << "Deposited.\n";
+            } else if (choice == 3) {
+                double amt;
+                cout << "Enter amount: ";
+                cin >> amt;
+                if (user->getAccounts()[0].withdraw(amt)) {
+                    bank.saveToFile();
+                    cout << "Withdrawn.\n";
+                } else {
+                    cout << "Insufficient funds.\n";
+                }
             }
-        } while (choice != 5);
-    }
-
-     void viewAccounts() {
-        auto &accs = currentUser->getAccounts();
-        cout << "Your Accounts:\n";
-        for (auto &a : accs) {
-            cout << "Acc No: " << a.getAccountNumber() 
-                 << " | Type: " << a.getType() 
-                 << " | Balance: " << a.getBalance() << endl;
-        }
-    }
-
-    void deposit() {
-        int accNo; double amt;
-        cout << "Enter Account Number: "; cin >> accNo;
-        cout << "Enter Amount: "; cin >> amt;
-        for (auto &a : currentUser->getAccounts()) {
-            if (a.getAccountNumber() == accNo) {
-                a.deposit(amt);
-                cout << "Deposited. New Balance: " << a.getBalance() << endl;
-                return;
-            }
-        }
-        cout << "Account not found.\n";
-    }
-
-    void withdraw() {
-        int accNo; double amt;
-        cout << "Enter Account Number: "; cin >> accNo;
-        cout << "Enter Amount: "; cin >> amt;
-        for (auto &a : currentUser->getAccounts()) {
-            if (a.getAccountNumber() == accNo) {
-                a.withdraw(amt);
-                return;
-            }
-        }
-        cout << "Account not found.\n";
-    }
-
-    void transfer() {
-        int fromAcc, toAcc; double amt;
-        cout << "From Account: "; cin >> fromAcc;
-        cout << "To Account: "; cin >> toAcc;
-        cout << "Amount: "; cin >> amt;
-
-        Account *src = nullptr, *dest = nullptr;
-        for (auto &a : currentUser->getAccounts()) {
-            if (a.getAccountNumber() == fromAcc) src = &a;
-            if (a.getAccountNumber() == toAcc) dest = &a;
-        }
-
-        if (src && dest && src->withdraw(amt)) {
-            dest->deposit(amt);
-            cout << "Transferred. New balance in " << fromAcc << ": " << src->getBalance() << endl;
-        } else {
-            cout << "Transfer failed.\n";
-        }
+        } while (choice != 4);
     }
 };
 
+//  Main
 int main() {
     Bank bank;
-    bank.addAccount(Account(1001, "Alice", 5000, 1234));
-    bank.addAccount(Account(1002, "Bob", 3000, 4321));
-
     ATM atm(bank);
 
-    int option;
+    int choice;
     do {
-        cout << "WELCOME TO ATM! ";
-        cout << "1. Login\n2. Exit\nChoose: ";
-        cin >> option;
-        if (option == 1) atm.login();
-    } while (option != 2);
+        cout << "Welcome to the Banking ATM Simulator!\n";
+        cout << "1. Sign Up\n2. Login\n3. Exit\nChoose: ";
+        cin >> choice;
 
+        if (choice == 1) {
+            string name; 
+            int pin;
+            cout << "Enter your name: ";
+            cin.ignore();              
+            getline(cin, name);      
+            cout << "Choose a 4-digit PIN: ";
+            cin >> pin;
+            bank.signUp(name, pin);
+        }
+        else if (choice == 2) {
+                    atm.login();
+            }
+    } while (choice != 3);
     return 0;
 }
