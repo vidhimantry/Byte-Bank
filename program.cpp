@@ -51,11 +51,76 @@ public:
     }
 };
 
+class ATM {
+private:
+    Bank &bank;
+    Account* currentAccount = nullptr;
+
+public:
+    ATM(Bank &b) : bank(b) {}
+
+    void login() {
+        int accNo, pin;
+        cout << "\nEnter Account Number: ";
+        cin >> accNo;
+        cout << "Enter PIN: ";
+        cin >> pin;
+
+        Account* acc = bank.getAccount(accNo);
+        if (acc && acc->validatePIN(pin)) {
+            currentAccount = acc;
+            cout << "Welcome " << acc->getHolderName() << "!" << endl;
+            showMenu();
+        } else {
+            cout << "Invalid account number or PIN.\n";
+        }
+    }
+
+    void showMenu() {
+        int choice;
+        do {
+            cout << "\n===== ATM MENU =====\n";
+            cout << "1. Check Balance\n2. Deposit\n3. Withdraw\n4. Exit\n";
+            cout << "Choose: ";
+            cin >> choice;
+
+            switch (choice) {
+                case 1: currentAccount->checkBalance(); break;
+                case 2: {
+                    double amt;
+                    cout << "Enter amount to deposit: ";
+                    cin >> amt;
+                    currentAccount->deposit(amt);
+                    break;
+                }
+                case 3: {
+                    double amt;
+                    cout << "Enter amount to withdraw: ";
+                    cin >> amt;
+                    currentAccount->withdraw(amt);
+                    break;
+                }
+                case 4: cout << "Thank you for using ATM!\n"; break;
+                default: cout << "Invalid choice.\n";
+            }
+        } while (choice != 4);
+    }
+};
+
 int main() {
     Bank bank;
     bank.addAccount(Account(1001, "Alice", 5000, 1234));
     bank.addAccount(Account(1002, "Bob", 3000, 4321));
 
-    cout << "Bank initialized with accounts." << endl;
+    ATM atm(bank);
+
+    int option;
+    do {
+        cout << "\n==== WELCOME TO ATM ====\n";
+        cout << "1. Login\n2. Exit\nChoose: ";
+        cin >> option;
+        if (option == 1) atm.login();
+    } while (option != 2);
+
     return 0;
 }
