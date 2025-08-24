@@ -83,8 +83,8 @@ Deposited.
 ```
 
 ## 📖 Concepts Demonstrated
-- **Classes & Objects** → `User`, `Account`, `BankSystem`.  
-- **Encapsulation** → data + methods bound inside objects.  
+- **Classes & Objects** → `User`, `Account`, `Bank`, `ATM`. 
+- **Encapsulation** → Data and methods bound inside objects.  
 - **File Handling** → Persistent storage with text file.  
 - **Polymorphism/Extensibility** → Easy to extend with new account types or features.  
 
