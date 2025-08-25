@@ -151,7 +151,7 @@ public:
             cin >> choice;
             if (choice == 1) {
                 for (auto &acc : user->getAccounts()) {
-                    cout << acc.getType() << " Acc " << acc.getAccountNumber()
+                    cout << acc.getType() << " Account " << acc.getAccountNumber()
                          << " Balance: " << acc.getBalance() << endl;
                 }
             } else if (choice == 2) {
@@ -160,14 +160,14 @@ public:
                 cin >> amt;
                 user->getAccounts()[0].deposit(amt);
                 bank.saveToFile();
-                cout << "Deposited.\n";
+                cout << "Deposited " << amt << "to your account!\n";
             } else if (choice == 3) {
                 double amt;
                 cout << "Enter amount: ";
                 cin >> amt;
                 if (user->getAccounts()[0].withdraw(amt)) {
                     bank.saveToFile();
-                    cout << "Withdrawn.\n";
+                    cout << "Withdrawn " << amt << " from your account!\n";
                 } else {
                     cout << "Insufficient funds.\n";
                 }
@@ -183,7 +183,7 @@ int main() {
 
     int choice;
     do {
-        cout << "Welcome to the Banking ATM Simulator!\n";
+        cout << "Welcome to ByteBank!\n";
         cout << "1. Sign Up\n2. Login\n3. Exit\nChoose: ";
         cin >> choice;
 
