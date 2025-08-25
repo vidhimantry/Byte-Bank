@@ -12,7 +12,7 @@ The project simulates a small ATM & Banking system with **signup, login, deposit
   - Data stored persistently in `users.txt`.  
 
 - 💳 **Bank Accounts**  
-  - Create account at signup (Savings by default).  
+  - Create account at signup (Savings or Current).  
   - Each account has account number, type, and balance.  
   - (Optional future upgrade: multiple accounts per user).  
 
@@ -32,8 +32,8 @@ The project simulates a small ATM & Banking system with **signup, login, deposit
 
 1. **Clone the repo**  
    ```bash
-   git clone https://github.com/vidhimantry/ATM-Bank-Simulator.git
-   cd ATM-Bank-Simulator
+   git clone https://github.com/vidhimantry/Byte-Bank.git
+   cd Byte-Bank
    ```
 
 2. **Compile and Run**  
@@ -45,7 +45,7 @@ The project simulates a small ATM & Banking system with **signup, login, deposit
 
 ## 🖥️ Sample Run
 ```
-Welcome to the Banking ATM Simulator!
+Welcome to the ByteBank!
 1. Sign Up
 2. Login
 3. Exit
@@ -69,17 +69,17 @@ ATM Options:
 2. Deposit
 3. Withdraw
 4. Logout
-Choose: 1
-Current Acc 1001 Balance: 0
+Choose: 2
+Enter amount: 15000
+Deposited 15000 to your account!
 
 ATM Options:
 1. View Balance
 2. Deposit
 3. Withdraw
 4. Logout
-Choose: 2
-Enter amount: 5000
-Deposited.
+Choose: 1
+Savings Account 1001 Balance: 15000
 ```
 
 ## 📖 Concepts Demonstrated
