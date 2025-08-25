@@ -45,7 +45,7 @@ The project simulates a small ATM & Banking system with **signup, login, deposit
 
 ## 🖥️ Sample Run
 ```
-Welcome to the ByteBank!
+Welcome to ByteBank!
 1. Sign Up
 2. Login
 3. Exit
@@ -56,14 +56,16 @@ Choose account type - 1 for Savings, 2 for Current: 2
 Sign up successful! Your User ID is: 1
 ```
 ```
-Welcome to the Banking ATM Simulator!
+Welcome to ByteBank!
 1. Sign Up
 2. Login
 3. Exit
 Choose: 2
 Enter User ID: 1
 Enter PIN: 4321
+
 Welcome, Kriti Gupta!
+
 ATM Options:
 1. View Balance
 2. Deposit
