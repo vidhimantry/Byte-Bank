@@ -97,6 +97,7 @@ public:
 
         string line;
         while (getline(file, line)) {
+            if (line.empty()) continue;
             stringstream ss(line);
             string userIdStr, name, pinStr, accNoStr, balStr, typeStr;
             getline(ss, userIdStr, '|');
@@ -160,7 +161,7 @@ public:
                 cin >> amt;
                 user->getAccounts()[0].deposit(amt);
                 bank.saveToFile();
-                cout << "Deposited " << amt << "to your account!\n";
+                cout << "Deposited " << amt << " to your account!\n";
             } else if (choice == 3) {
                 double amt;
                 cout << "Enter amount: ";

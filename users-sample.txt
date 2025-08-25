@@ -1,0 +1,8 @@
+
+1|Vidhi Mantry|1111|1001|90000|Savings
+2|Sweta Tiwari|2345|1002|23000|Current
+3|Amit Agarwal|9090|1003|70850|Savings
+4|Raj Khanna|5555|1004|100000|Savings
+5|Esha Malhotra|7676|1005|45450|Current
+6|Sidharth Jain|7777|1006|50050|Savings
+7|Smriti Daga|4321|1007|20000|Savings
