@@ -145,10 +145,10 @@ public:
             return;
         }
 
-        cout << "Welcome, " << user->getName() << "!\n";
+        cout << "\nWelcome, " << user->getName() << "!\n";
         int choice;
         do {
-            cout << "ATM Options:\n1. View Balance\n2. Deposit\n3. Withdraw\n4. Logout\nChoose: ";
+            cout << "\nATM Options:\n1. View Balance\n2. Deposit\n3. Withdraw\n4. Logout\nChoose: ";
             cin >> choice;
             if (choice == 1) {
                 for (auto &acc : user->getAccounts()) {
@@ -184,7 +184,7 @@ int main() {
 
     int choice;
     do {
-        cout << "Welcome to ByteBank!\n";
+        cout << "\nWelcome to ByteBank!\n";
         cout << "1. Sign Up\n2. Login\n3. Exit\nChoose: ";
         cin >> choice;
 
